@@ -34,6 +34,7 @@
             top: 20px;
             color: #ff00ff;
             text-shadow: 0 0 10px #ff00ff;
+            animation: glow 1s infinite alternate;
         }
         #timer {
             left: 20px;
@@ -51,6 +52,7 @@
             font-size: 45px;
             margin-bottom: 20px;
             text-shadow: 0 0 10px #00ff99;
+            animation: wiggle 1s infinite ease-in-out;
         }
         #answer {
             font-size: 30px;
@@ -62,6 +64,7 @@
             background-color: black;
             color: white;
             text-shadow: 0 0 10px #00ff99;
+            animation: glow 1.5s infinite alternate;
         }
         #answer::-webkit-outer-spin-button,
         #answer::-webkit-inner-spin-button {
@@ -86,6 +89,10 @@
             margin-top: 20px;
             box-shadow: 0 0 20px #ff00ff;
             text-transform: uppercase;
+            transition: transform 0.2s;
+        }
+        #start-button:hover, #restart-button:hover, #submit-button:hover {
+            transform: scale(1.1);
         }
         #number-pad {
             display: grid;
@@ -103,9 +110,55 @@
             color: white;
             font-size: 30px;
             cursor: pointer;
+            transition: transform 0.2s;
+            animation: bounce 2s infinite;
+        }
+        .number-button:hover {
+            transform: scale(1.2);
         }
         .number-button:active {
             background-color: #555;
+        }
+        #pixel-explosion {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff00ff;
+            animation: explode 0.8s ease-out forwards;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ff00ff;
+            }
+            to {
+                text-shadow: 0 0 20px #ff00ff;
+            }
+        }
+        @keyframes wiggle {
+            0%, 100% {
+                transform: rotate(-3deg);
+            }
+            50% {
+                transform: rotate(3deg);
+            }
+        }
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(10);
+                opacity: 0;
+            }
         }
         @media (max-width: 768px) {
             body {
@@ -230,6 +283,7 @@
             if (userAnswer === correctAnswer) {
                 correctCount++;
                 document.getElementById('correct-sound').play();
+                createPixelExplosion();
                 document.getElementById('feedback').textContent = '✅ Correct!';
                 document.getElementById('feedback').style.color = '#00ff99';
                 setTimeout(() => {
@@ -239,6 +293,7 @@
             } else {
                 wrongCount++;
                 document.getElementById('incorrect-sound').play();
+                createPixelExplosion(true);
                 document.getElementById('feedback').textContent = `❌ Wrong! The correct answer was ${correctAnswer}.`;
                 document.getElementById('feedback').style.color = '#ff00ff';
                 setTimeout(() => {
@@ -277,6 +332,23 @@
                 highscoresList.appendChild(li);
             });
             document.getElementById('highscores').style.display = 'block';
+        }
+
+        function createPixelExplosion(isWrong = false) {
+            const colors = isWrong ? ['#ff0000', '#ff00ff'] : ['#00ff99', '#ffcc00'];
+            for (let i = 0; i < 15; i++) {
+                const pixel = document.createElement('div');
+                pixel.className = 'pixel-explosion';
+                pixel.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+                pixel.style.left = `${Math.random() * 100}vw`;
+                pixel.style.top = `${Math.random() * 100}vh`;
+                pixel.style.position = 'absolute';
+                pixel.style.width = '10px';
+                pixel.style.height = '10px';
+                pixel.style.animation = 'explode 0.8s ease-out forwards';
+                document.body.appendChild(pixel);
+                setTimeout(() => pixel.remove(), 800);
+            }
         }
 
         document.getElementById('start-button').addEventListener('click', startGame);
