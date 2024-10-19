@@ -228,14 +228,16 @@
                 <button class="number-button" value="3">3</button>
                 <button class="number-button" value="0">0</button>
                 <button id="backspace-button" class="number-button" style="background-color: #ff0000;">&#9003;</button>
+                <button id="circle-submit-button" class="number-button" style="background-color: #00ff99;">✔</button>
             </div>
-            <button id="submit-button" style="display:none;">Submit</button>
+            
             <p id="feedback"></p>
         </div>
         <button id="restart-button" style="display:none;">Restart Game</button>
-        <div id="highscores" style="display:none;">
-            <h2>Highscores</h2>
-            <ul id="highscores-list" style="list-style: none; padding: 0;"></ul>
+        <div id="highscores" style="display:none;">$1</div>
+        <div id="incorrect-answers" style="display:none;">
+            <h2>Incorrect Answers</h2>
+            <ul id="incorrect-answers-list" style="list-style: none; padding: 0;"></ul>
         </div>
     </div>
     <script>
@@ -245,6 +247,7 @@
         let wrongCount = 0;
         let num1, num2;
         let highscores = [];
+        let wrongAnswers = [];
 
         function startGame() {
             document.getElementById('start-sound').play();
@@ -285,9 +288,12 @@
         }
 
         function checkAnswer() {
-            let userAnswer = parseInt(document.getElementById('answer').value);
-            let correctAnswer = num1 * num2;
-            if (userAnswer === correctAnswer) {
+            $1if (userAnswer === correctAnswer) {
+                correctCount++;
+                document.getElementById('correct-sound').play();
+                document.getElementById('emoji-face').textContent = '😊';
+                document.getElementById('emoji-face').style.transform = 'scale(1.2)';
+                createPixelExplosion();
                 correctCount++;
                 document.getElementById('correct-sound').play();
                 document.getElementById('emoji-face').textContent = '😊';
@@ -302,7 +308,11 @@
                     generateQuestion();
                 }, 500);
             } else {
-                wrongCount++;
+                document.getElementById('incorrect-sound').play();
+                document.getElementById('emoji-face').textContent = '😡';
+                document.getElementById('emoji-face').style.transform = 'scale(0.8)';
+                wrongAnswers.push(`${num1} × ${num2} = ${correctAnswer}`);
+                $1wrongCount++;
                 document.getElementById('incorrect-sound').play();
                 document.getElementById('emoji-face').textContent = '😡';
                 document.getElementById('emoji-face').style.transform = 'scale(0.8)';
@@ -321,12 +331,8 @@
         }
 
         function endGame() {
-            document.getElementById('end-sound').play();
-            document.getElementById('game').style.display = 'none';
-            document.getElementById('restart-button').style.display = 'block';
-            document.getElementById('number-pad').style.display = 'none';
-            document.getElementById('submit-button').style.display = 'none';
-            recordHighscore();
+            document.getElementById('end-sound').play();$1recordHighscore();
+            displayIncorrectAnswers();
         }
 
         function recordHighscore() {
@@ -339,14 +345,21 @@
         }
 
         function displayHighscores() {
-            const highscoresList = document.getElementById('highscores-list');
-            highscoresList.innerHTML = '';
-            highscores.forEach(entry => {
+            $1document.getElementById('highscores').style.display = 'block';
+        }
+
+        function displayIncorrectAnswers() {
+            const incorrectAnswersList = document.getElementById('incorrect-answers-list');
+            incorrectAnswersList.innerHTML = '';
+            wrongAnswers.forEach(answer => {
                 const li = document.createElement('li');
-                li.textContent = `${entry.name}: ${entry.score}`;
-                highscoresList.appendChild(li);
+                li.textContent = answer;
+                incorrectAnswersList.appendChild(li);
             });
-            document.getElementById('highscores').style.display = 'block';
+            if (wrongAnswers.length > 0) {
+                document.getElementById('incorrect-answers').style.display = 'block';
+            }
+        }
         }
 
         function createPixelExplosion(isWrong = false) {
@@ -368,7 +381,7 @@
 
         document.getElementById('start-button').addEventListener('click', startGame);
         document.getElementById('restart-button').addEventListener('click', startGame);
-        document.getElementById('submit-button').addEventListener('click', checkAnswer);
+        document.getElementById('circle-submit-button').addEventListener('click', checkAnswer);
         document.querySelectorAll('.number-button').forEach(button => {
             button.addEventListener('click', () => {
                 document.getElementById('answer').value += button.value;
