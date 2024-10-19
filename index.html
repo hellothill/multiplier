@@ -6,139 +6,67 @@
     <title>Multiplication Game for Kids</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>
+    <style>$1
         body {
-            font-family: 'Press Start 2P', cursive;
-            text-align: center;
-            background-color: black;
-            color: #00ff99;
-            margin: 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            height: 100vh;
-            overflow: hidden;
-            position: relative;
-        }
-        #game-container {
-            max-width: 1000px;
-            padding: 20px;
-            width: 90%;
+            font-size: 125%;
         }
         #timer, #score {
-            font-size: 24px;
-            font-weight: bold;
-            position: absolute;
-            top: 20px;
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff;
-        }
-        #timer {
-            left: 20px;
-        }
-        #score {
-            right: 20px;
-            display: flex;
-            gap: 10px;
-            align-items: center;
-        }
-        #game {
-            margin-top: 50px;
+            font-size: 30px;
         }
         #question {
-            font-size: 36px;
-            margin-bottom: 20px;
-            text-shadow: 0 0 10px #00ff99;
+            font-size: 45px;
         }
         #answer {
-            font-size: 24px;
-            padding: 10px;
-            width: 80%;
-            text-align: center;
-            margin-bottom: 20px;
-            border: none;
-            background-color: black;
-            color: white;
-            text-shadow: 0 0 10px #00ff99;
-        }
-        #answer::-webkit-outer-spin-button,
-        #answer::-webkit-inner-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
+            font-size: 30px;
+            width: 100%;
         }
         #feedback {
-            font-size: 16px;
-            font-weight: bold;
-            margin-top: 20px;
-            height: 30px;
-            text-shadow: 0 0 10px #ff00ff;
+            font-size: 20px;
         }
         #start-button, #restart-button, #submit-button {
-            padding: 10px 20px;
-            font-size: 16px;
-            cursor: pointer;
-            background-color: #ff00ff;
-            border: none;
-            color: black;
-            border-radius: 5px;
-            margin-top: 20px;
-            box-shadow: 0 0 20px #ff00ff;
-            text-transform: uppercase;
-        }
-        #number-pad {
-            display: grid;
-            grid-template-columns: repeat(3, 60px);
-            gap: 10px;
-            justify-content: center;
-            margin-top: 20px;
+            font-size: 20px;
+            padding: 12.5px 25px;
         }
         .number-button {
-            width: 60px;
-            height: 60px;
-            border-radius: 50%;
-            border: none;
-            background-color: #333;
-            color: white;
-            font-size: 24px;
-            cursor: pointer;
-        }
-        .number-button:active {
-            background-color: #555;
+            width: 75px;
+            height: 75px;
+            font-size: 30px;
         }
         @media (max-width: 768px) {
             body {
-                font-size: 12px;
-                height: auto;
-                padding: 10px;
+                font-size: 15px;
             }
             #timer, #score {
-                font-size: 18px;
+                font-size: 22.5px;
             }
             #question {
-                font-size: 28px;
+                font-size: 35px;
             }
             #answer {
-                font-size: 20px;
+                font-size: 25px;
                 width: 100%;
-                padding: 5px;
+                padding: 6.25px;
             }
             #feedback {
-                font-size: 14px;
-                margin-top: 10px;
-                height: 20px;
+                font-size: 17.5px;
+                margin-top: 12.5px;
+                height: 25px;
             }
             #start-button, #restart-button, #submit-button {
-                font-size: 14px;
-                padding: 8px 16px;
+                font-size: 17.5px;
+                padding: 10px 20px;
             }
             .number-button {
-                width: 50px;
-                height: 50px;
-                font-size: 20px;
+                width: 62.5px;
+                height: 62.5px;
+                font-size: 25px;
             }
         }
     </style>
+<audio id="correct-sound" src="https://www.myinstants.com/media/sounds/ka-ching.mp3" preload="auto"></audio>
+    <audio id="incorrect-sound" src="https://www.myinstants.com/media/sounds/wrong-answer-buzzer.mp3" preload="auto"></audio>
+    <audio id="start-sound" src="https://www.myinstants.com/media/sounds/gangnam-style.mp3" preload="auto"></audio>
+    <audio id="end-sound" src="https://www.myinstants.com/media/sounds/shot-clock.mp3" preload="auto"></audio>
 </head>
 <body>
     <div id="game-container">
@@ -151,17 +79,8 @@
             </div>
             <div id="question"></div>
             <input type="number" id="answer" placeholder="?">
-            <div id="number-pad" style="display:none;">
-                <button class="number-button" value="7">7</button>
-                <button class="number-button" value="8">8</button>
-                <button class="number-button" value="9">9</button>
-                <button class="number-button" value="4">4</button>
-                <button class="number-button" value="5">5</button>
-                <button class="number-button" value="6">6</button>
-                <button class="number-button" value="1">1</button>
-                <button class="number-button" value="2">2</button>
-                <button class="number-button" value="3">3</button>
-                <button class="number-button" value="0">0</button>
+            <div id="number-pad" style="display:none;">$1<button class="number-button" value="0">0</button>
+                <button id="backspace-button" class="number-button" style="background-color: #ff0000;">&#9003;</button>
             </div>
             <button id="submit-button" style="display:none;">Submit</button>
             <p id="feedback"></p>
@@ -181,12 +100,7 @@
         let highscores = [];
 
         function startGame() {
-            document.getElementById('start-button').style.display = 'none';
-            document.getElementById('restart-button').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-            document.getElementById('number-pad').style.display = 'grid';
-            document.getElementById('submit-button').style.display = 'inline-block';
-            timeRemaining = 60;
+            document.getElementById('start-sound').play();$1timeRemaining = 60;
             correctCount = 0;
             wrongCount = 0;
             document.getElementById('correct-count').textContent = `${correctCount} 😊`;
@@ -218,9 +132,8 @@
         }
 
         function checkAnswer() {
-            let userAnswer = parseInt(document.getElementById('answer').value);
-            let correctAnswer = num1 * num2;
-            if (userAnswer === correctAnswer) {
+            $1if (userAnswer === correctAnswer) {
+                document.getElementById('correct-sound').play();
                 correctCount++;
                 document.getElementById('feedback').textContent = '✅ Correct!';
                 document.getElementById('feedback').style.color = '#00ff99';
@@ -229,7 +142,7 @@
                     generateQuestion();
                 }, 500);
             } else {
-                wrongCount++;
+                document.getElementById('incorrect-sound').play();$1wrongCount++;
                 document.getElementById('feedback').textContent = `❌ Wrong! The correct answer was ${correctAnswer}.`;
                 document.getElementById('feedback').style.color = '#ff00ff';
                 setTimeout(() => {
@@ -242,11 +155,7 @@
         }
 
         function endGame() {
-            document.getElementById('game').style.display = 'none';
-            document.getElementById('restart-button').style.display = 'block';
-            document.getElementById('number-pad').style.display = 'none';
-            document.getElementById('submit-button').style.display = 'none';
-            recordHighscore();
+            document.getElementById('end-sound').play();$1recordHighscore();
         }
 
         function recordHighscore() {
@@ -272,10 +181,11 @@
         document.getElementById('start-button').addEventListener('click', startGame);
         document.getElementById('restart-button').addEventListener('click', startGame);
         document.getElementById('submit-button').addEventListener('click', checkAnswer);
-        document.querySelectorAll('.number-button').forEach(button => {
-            button.addEventListener('click', () => {
-                document.getElementById('answer').value += button.value;
-            });
+        document.querySelectorAll('.number-button').forEach(button => {$1});
+        document.getElementById('backspace-button').addEventListener('click', () => {
+            const answerField = document.getElementById('answer');
+            answerField.value = answerField.value.slice(0, -1);
+        });
         });
     </script>
 </body>
