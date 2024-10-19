@@ -7,6 +7,26 @@
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
     <style>
+        #number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 60px);
+            gap: 10px;
+            justify-content: center;
+            margin-top: 20px;
+        }
+        .number-button {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+        .number-button:active {
+            background-color: #555;
+        }
         body {
             font-family: 'Press Start 2P', cursive;
             text-align: center;
@@ -128,6 +148,19 @@
             <input type="number" id="answer" placeholder="?">
             <p id="feedback"></p>
         </div>
+        <div id="number-pad" style="display:none;">
+            <button class="number-button" value="7">7</button>
+            <button class="number-button" value="8">8</button>
+            <button class="number-button" value="9">9</button>
+            <button class="number-button" value="4">4</button>
+            <button class="number-button" value="5">5</button>
+            <button class="number-button" value="6">6</button>
+            <button class="number-button" value="1">1</button>
+            <button class="number-button" value="2">2</button>
+            <button class="number-button" value="3">3</button>
+            <button class="number-button" value="0">0</button>
+        </div>
+        <button id="submit-button" style="display:none; margin-top: 20px; padding: 10px 20px; font-size: 16px; cursor: pointer; background-color: #00ff99; border: none; color: black; border-radius: 5px; box-shadow: 0 0 20px #00ff99; text-transform: uppercase;">Submit</button>
         <button id="restart-button" style="display:none;">Restart Game</button>
         <div id="highscores" style="display:none;">
             <h2>Highscores</h2>
@@ -142,16 +175,10 @@
         let num1, num2;
         let highscores = [];
 
-        function startGame() {
-            document.getElementById('start-button').style.display = 'none';
-            document.getElementById('restart-button').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-            timeRemaining = 60;
-            correctCount = 0;
-            wrongCount = 0;
-            document.getElementById('correct-count').textContent = `${correctCount} 😊`;
-            document.getElementById('wrong-count').textContent = `${wrongCount} 😢`;
-            startTimer();
+        function startGame() {$1startTimer();
+            document.getElementById('number-pad').style.display = 'grid';
+            document.getElementById('submit-button').style.display = 'inline-block';
+            document.getElementById('number-pad').style.display = 'grid';
             generateQuestion();
         }
 
@@ -201,10 +228,10 @@
             document.getElementById('wrong-count').textContent = `${wrongCount} 😢`;
         }
 
-        function endGame() {
-            document.getElementById('game').style.display = 'none';
-            document.getElementById('restart-button').style.display = 'block';
-            recordHighscore();
+        function endGame() {$1recordHighscore();
+            document.getElementById('number-pad').style.display = 'none';
+            document.getElementById('submit-button').style.display = 'none';
+            document.getElementById('number-pad').style.display = 'none';
         }
 
         function recordHighscore() {
@@ -229,10 +256,14 @@
 
         document.getElementById('start-button').addEventListener('click', startGame);
         document.getElementById('restart-button').addEventListener('click', startGame);
-        document.getElementById('answer').addEventListener('keyup', (event) => {
-            if (event.key === 'Enter') {
-                checkAnswer();
-            }
+        document.getElementById('answer').addEventListener('keyup', (event) => {$1});
+        document.getElementById('submit-button').addEventListener('click', () => {
+            checkAnswer();
+        });
+        document.querySelectorAll('.number-button').forEach(button => {
+            button.addEventListener('click', () => {
+                document.getElementById('answer').value += button.value;
+            });
         });
     </script>
 </body>
