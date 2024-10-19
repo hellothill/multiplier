@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Multiplication Game for Kids</title>
     <link rel="stylesheet" href="styles.css">
-    <script defer src="script.js"></script>
+    
     <audio id="end-sound" src="https://www.myinstants.com/media/sounds/shot-clock.mp3" preload="auto"></audio>
     <style>
         .fade-in {
@@ -221,7 +221,12 @@
         let wrongAnswers = [];
         let highscores = [];
 
-        function startGame() {$1document.getElementById('restart-button').style.display = 'none';
+        function startGame() {
+            document.getElementById('start-sound').play();
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('restart-button').style.display = 'none';
+            document.getElementById('question').style.display = 'block';
+            document.getElementById('answer').style.display = 'block';
             document.getElementById('question').style.display = 'block';
             document.getElementById('answer').style.display = 'block';
             document.getElementById('highscores-link').style.display = 'none';
@@ -339,7 +344,7 @@
             }
         }
 
-        document.getElementById('start-button').classList.add('button-bounce');
+        document.getElementById('start-button').addEventListener('click', startGame);
         document.getElementById('start-button').addEventListener('click', startGame);
         document.addEventListener('keyup', (event) => {
             if (event.key === 'Enter' && document.getElementById('start-button').style.display !== 'none') {
