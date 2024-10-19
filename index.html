@@ -8,6 +8,35 @@
     <script defer src="script.js"></script>
     <audio id="end-sound" src="https://www.myinstants.com/media/sounds/shot-clock.mp3" preload="auto"></audio>
     <style>
+        .fade-in {
+            animation: fadeIn 1s ease-in;
+        }
+        .button-bounce {
+            animation: bounce 0.5s infinite alternate;
+        }
+        .shake {
+            animation: shake 0.5s;
+        }
+        .highlight-correct {
+            animation: highlightCorrect 1s ease-in-out;
+        }
+        @keyframes fadeIn {
+            0% { opacity: 0; }
+            100% { opacity: 1; }
+        }
+        @keyframes bounce {
+            0% { transform: translateY(0); }
+            100% { transform: translateY(-5px); }
+        }
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        @keyframes highlightCorrect {
+            0% { background-color: #00ff99; color: black; }
+            100% { background-color: transparent; color: #00ff99; }
+        }
         body {
             font-family: 'Press Start 2P', cursive;
             text-align: center;
@@ -25,9 +54,10 @@
         #game-container {
             max-width: 1000px;
             padding: 20px;
+            width: 90%;
         }
         #timer {
-            font-size: 56px;
+            font-size: 36px;
             font-weight: bold;
             position: absolute;
             top: 20px;
@@ -42,53 +72,67 @@
             color: #00ff99;
             cursor: pointer;
             text-decoration: underline;
-            font-size: 18px;
+            font-size: 14px;
             text-shadow: 0 0 10px #00ff99;
         }
         #score {
-            position: absolute;
-            top: 20px;
+            position: fixed;
             right: 20px;
-            font-size: 24px;
-            text-align: right;
-            color: #ff00ff;
-            text-shadow: 0 0 10px #ff00ff;
+            top: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
         }
-        #score span {
-            display: block;
-        }
+        #score span {$1display: inline-block;$2}
         #game {
-            margin-top: 100px;
+            margin-top: 50px;
         }
-        #question { font-size: 120px; animation: neonColors 3s infinite;
-            margin-bottom: 30px;
+        #question {
+            font-size: 36px;
+            animation: neonColors 3s infinite;
+            margin-bottom: 20px;
             text-shadow: 0 0 10px #00ff99;
         }
-        #answer {$1
+        #answer {
+            font-size: 24px;
+            padding: 10px;
+            width: 80%;
+            text-align: center;
+            margin-bottom: 20px;
+            border: none;
+            background-color: black;
+            color: white;
+            text-shadow: 0 0 10px #00ff99;
             -moz-appearance: textfield;
             appearance: textfield;
         }
-
-        /* Hide the increment and decrement arrows in Webkit browsers */
         #answer::-webkit-outer-spin-button,
         #answer::-webkit-inner-spin-button {
             -webkit-appearance: none;
             margin: 0;
         }
         #feedback {
-            font-size: 40px;
+            font-size: 16px;
             font-weight: bold;
-            margin-top: 30px;
-            height: 50px;
+            margin-top: 20px;
+            height: 30px;
             text-shadow: 0 0 10px #ff00ff;
         }
-        #start-button, #restart-button {$1margin: 20px auto;
+        #start-button, #restart-button {
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            background-color: #ff00ff;
+            border: none;
+            color: black;
+            border-radius: 5px;
+            margin-top: 20px;
             box-shadow: 0 0 20px #ff00ff;
             text-transform: uppercase;
         }
         .emoji {
             position: absolute;
-            font-size: 40px;
+            font-size: 24px;
             animation: float 10s linear infinite;
             opacity: 0.8;
         }
@@ -100,45 +144,42 @@
                 transform: translateY(-100vh);
             }
         }
-    @keyframes neonColors {
+        @keyframes neonColors {
             0% { color: #00ff99; }
             25% { color: #ff00ff; }
             50% { color: #00ccff; }
             75% { color: #ffff00; }
             100% { color: #00ff99; }
         }
-    @media (max-width: 768px) {
+
+        @media (max-width: 768px) {
             body {
-                font-size: 14px;
+                font-size: 12px;
                 height: auto;
-                padding: 20px;
-            }
-            #game-container {
-                width: 100%;
                 padding: 10px;
             }
             #timer, #score {
-                font-size: 32px;
+                font-size: 18px;
             }
             #question {
-                font-size: 64px;
+                font-size: 28px;
             }
             #answer {
-                font-size: 48px;
-                width: 80%;
+                font-size: 20px;
+                width: 100%;
                 padding: 5px;
             }
             #feedback {
-                font-size: 24px;
-                margin-top: 15px;
-                height: 30px;
+                font-size: 14px;
+                margin-top: 10px;
+                height: 20px;
             }
             #start-button, #restart-button {
-                font-size: 20px;
-                padding: 10px 20px;
+                font-size: 14px;
+                padding: 8px 16px;
             }
             .emoji {
-                font-size: 24px;
+                font-size: 18px;
             }
         }
     </style>
@@ -154,8 +195,8 @@
             <div id="timer">01:00</div>
             <a id="highscores-link" style="display:none;">View Highscores</a>
             <div id="score">
-                <span><span id="correct-count">0</span> 😊 RIGHT</span>
-                <span><span id="wrong-count">0</span> 😢 WRONG</span>
+                <span><span id="correct-count">0</span> 😊</span>
+                <span><span id="wrong-count">0</span> 😢</span>
             </div>
             <div id="question"></div>
             <input type="number" id="answer" placeholder="?">
@@ -180,11 +221,9 @@
         let wrongAnswers = [];
         let highscores = [];
 
-        function startGame() {
-    document.getElementById('start-sound').play();
-            document.getElementById('start-button').style.display = 'none';
-            document.getElementById('game').style.display = 'block';
-            document.getElementById('restart-button').style.display = 'none';
+        function startGame() {$1document.getElementById('restart-button').style.display = 'none';
+            document.getElementById('question').style.display = 'block';
+            document.getElementById('answer').style.display = 'block';
             document.getElementById('highscores-link').style.display = 'none';
             document.getElementById('wrong-answers').style.display = 'none';
             timeRemaining = 60;
@@ -223,9 +262,11 @@
         function checkAnswer() {
             let userAnswer = parseInt(document.getElementById('answer').value);
             let correctAnswer = num1 * num2;
-            if (userAnswer === correctAnswer) {$1correctCount++;
+            if (userAnswer === correctAnswer) {
+                correctCount++;
                 document.getElementById('correct-sound').play();
                 document.getElementById('feedback').textContent = '✅ Correct!';
+                document.getElementById('feedback').classList.add('highlight-correct');
                 document.getElementById('feedback').style.color = '#00ff99';
                 setTimeout(() => {
                     document.getElementById('feedback').textContent = '';
@@ -236,6 +277,7 @@
                 document.getElementById('incorrect-sound').play();
                 wrongAnswers.push(`${num1} × ${num2} = ${correctAnswer}`);
                 document.getElementById('feedback').textContent = `❌ Wrong! The correct answer was ${correctAnswer}.`;
+                document.getElementById('feedback').classList.add('shake');
                 document.getElementById('feedback').style.color = '#ff00ff';
                 setTimeout(() => {
                     document.getElementById('feedback').textContent = '';
@@ -246,8 +288,10 @@
             document.getElementById('wrong-count').textContent = wrongCount;
         }
 
-        function endGame() {$1document.getElementById('question').style.display = 'none';
+        function endGame() {
+            document.getElementById('question').style.display = 'none';
             document.getElementById('answer').style.display = 'none';
+            document.getElementById('end-sound').play();
             recordHighscore();
         }
 
@@ -271,7 +315,9 @@
             }
         }
 
-        function displayHighscores() {$1document.getElementById('highscores').style.display = 'block';
+        function displayHighscores() {
+            document.getElementById('highscores').style.display = 'block';
+            document.getElementById('restart-button').classList.add('fade-in');
             document.getElementById('restart-button').style.display = 'block';
             document.getElementById('restart-button').style.margin = '20px auto';
             document.getElementById('highscores').style.textAlign = 'center';
@@ -293,6 +339,7 @@
             }
         }
 
+        document.getElementById('start-button').classList.add('button-bounce');
         document.getElementById('start-button').addEventListener('click', startGame);
         document.addEventListener('keyup', (event) => {
             if (event.key === 'Enter' && document.getElementById('start-button').style.display !== 'none') {
