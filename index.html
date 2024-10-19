@@ -391,6 +391,11 @@
         document.getElementById('start-button').addEventListener('click', startGame);
         document.getElementById('restart-button').addEventListener('click', startGame);
         document.getElementById('circle-submit-button').addEventListener('click', checkAnswer);
+        document.getElementById('answer').addEventListener('keydown', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
         document.querySelectorAll('.number-button').forEach(button => {
             button.addEventListener('click', () => {
                 document.getElementById('answer').value += button.value;
