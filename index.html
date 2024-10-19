@@ -6,18 +6,197 @@
     <title>Multiplication Game for Kids</title>
     <link rel="stylesheet" href="styles.css">
     <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
-    <style>$1
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            background-color: black;
+            color: #00ff99;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+            font-size: 125%;
+        }
+        #game-container {
+            max-width: 1000px;
+            padding: 20px;
+            width: 90%;
+        }
+        #timer, #score {
+            font-size: 30px;
+            font-weight: bold;
+            position: absolute;
+            top: 20px;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+            animation: glow 1s infinite alternate;
+        }
+        #timer {
+            left: 20px;
+        }
+        #score {
+            right: 20px;
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+        #game {
+            margin-top: 50px;
+        }
         #emoji-face {
             font-size: 80px;
             margin-bottom: 20px;
             transition: transform 0.5s;
         }
-        #submit-button {
+        #question {
+            font-size: 45px;
+            margin-bottom: 20px;
+            text-shadow: 0 0 10px #00ff99;
+            animation: wiggle 1s infinite ease-in-out;
+        }
+        #answer {
+            font-size: 30px;
+            padding: 10px;
             width: 100%;
+            text-align: center;
+            margin-bottom: 20px;
+            border: none;
+            background-color: black;
+            color: white;
+            text-shadow: 0 0 10px #00ff99;
+            animation: glow 1.5s infinite alternate;
+        }
+        #answer::-webkit-outer-spin-button,
+        #answer::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        #feedback {
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 20px;
+            height: 30px;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        #start-button, #restart-button, #submit-button {
             padding: 15px;
+            font-size: 20px;
+            cursor: pointer;
+            background-color: #ff00ff;
+            border: none;
+            color: black;
+            border-radius: 5px;
+            margin-top: 20px;
+            box-shadow: 0 0 20px #ff00ff;
+            text-transform: uppercase;
+            transition: transform 0.2s;
+            width: 100%;
+        }
+        #start-button:hover, #restart-button:hover, #submit-button:hover {
+            transform: scale(1.1);
         }
         #number-pad {
+            display: grid;
+            grid-template-columns: repeat(3, 75px);
+            gap: 10px;
+            justify-content: center;
             margin-top: 20px;
+        }
+        .number-button {
+            width: 75px;
+            height: 75px;
+            border-radius: 50%;
+            border: none;
+            background-color: #333;
+            color: white;
+            font-size: 30px;
+            cursor: pointer;
+            transition: transform 0.2s;
+            animation: bounce 2s infinite;
+        }
+        .number-button:hover {
+            transform: scale(1.2);
+        }
+        .number-button:active {
+            background-color: #555;
+        }
+        #pixel-explosion {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            background-color: #ff00ff;
+            animation: explode 0.8s ease-out forwards;
+        }
+        @keyframes bounce {
+            0%, 100% {
+                transform: translateY(0);
+            }
+            50% {
+                transform: translateY(-10px);
+            }
+        }
+        @keyframes glow {
+            from {
+                text-shadow: 0 0 10px #ff00ff;
+            }
+            to {
+                text-shadow: 0 0 20px #ff00ff;
+            }
+        }
+        @keyframes wiggle {
+            0%, 100% {
+                transform: rotate(-3deg);
+            }
+            50% {
+                transform: rotate(3deg);
+            }
+        }
+        @keyframes explode {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(10);
+                opacity: 0;
+            }
+        }
+        @media (max-width: 768px) {
+            body {
+                font-size: 15px;
+                height: auto;
+                padding: 10px;
+            }
+            #timer, #score {
+                font-size: 22.5px;
+            }
+            #question {
+                font-size: 35px;
+            }
+            #answer {
+                font-size: 25px;
+                width: 100%;
+                padding: 6.25px;
+            }
+            #feedback {
+                font-size: 17.5px;
+                margin-top: 12.5px;
+                height: 25px;
+            }
+            #start-button, #restart-button, #submit-button {
+                font-size: 17.5px;
+                padding: 10px 20px;
+            }
+            .number-button {
+                width: 62.5px;
+                height: 62.5px;
+                font-size: 25px;
+            }
         }
     </style>
     <audio id="correct-sound" src="https://www.myinstants.com/media/sounds/ka-ching.mp3" preload="auto"></audio>
@@ -31,7 +210,6 @@
         <div id="game" style="display:none;">
             <div id="timer">01:00</div>
             <div id="emoji-face">😐</div>
-            <div id="timer">01:00</div>
             <div id="score">
                 <span id="correct-count">0 😊</span>
                 <span id="wrong-count">0 😢</span>
@@ -107,33 +285,34 @@
         }
 
         function checkAnswer() {
-            $1if (userAnswer === correctAnswer) {
+            let userAnswer = parseInt(document.getElementById('answer').value);
+            let correctAnswer = num1 * num2;
+            if (userAnswer === correctAnswer) {
                 correctCount++;
                 document.getElementById('correct-sound').play();
                 document.getElementById('emoji-face').textContent = '😊';
                 document.getElementById('emoji-face').style.transform = 'scale(1.2)';
-                createPixelExplosion();
-                correctCount++;
-                document.getElementById('correct-sound').play();
                 createPixelExplosion();
                 document.getElementById('feedback').textContent = '✅ Correct!';
                 document.getElementById('feedback').style.color = '#00ff99';
                 setTimeout(() => {
                     document.getElementById('feedback').textContent = '';
                     document.getElementById('emoji-face').textContent = '😐';
-                    document.getElementById('emoji-face').style.transform = 'scale(1)';$1generateQuestion();
+                    document.getElementById('emoji-face').style.transform = 'scale(1)';
+                    generateQuestion();
                 }, 500);
             } else {
+                wrongCount++;
                 document.getElementById('incorrect-sound').play();
                 document.getElementById('emoji-face').textContent = '😡';
                 document.getElementById('emoji-face').style.transform = 'scale(0.8)';
-                $1wrongCount++;
-                document.getElementById('incorrect-sound').play();
                 createPixelExplosion(true);
                 document.getElementById('feedback').textContent = `❌ Wrong! The correct answer was ${correctAnswer}.`;
                 document.getElementById('feedback').style.color = '#ff00ff';
                 setTimeout(() => {
                     document.getElementById('feedback').textContent = '';
+                    document.getElementById('emoji-face').textContent = '😐';
+                    document.getElementById('emoji-face').style.transform = 'scale(1)';
                     generateQuestion();
                 }, 1000);
             }
