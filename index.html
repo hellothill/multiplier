@@ -1,0 +1,294 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Multiplication Game for Kids</title>
+    <link rel="stylesheet" href="styles.css">
+    <script defer src="script.js"></script>
+    <audio id="end-sound" src="https://www.myinstants.com/media/sounds/shot-clock.mp3" preload="auto"></audio>
+    <style>
+        body {
+            font-family: 'Press Start 2P', cursive;
+            text-align: center;
+            background-color: black;
+            color: #00ff99;
+            margin: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            overflow: hidden;
+            position: relative;
+        }
+        #game-container {
+            max-width: 1000px;
+            padding: 20px;
+        }
+        #timer {
+            font-size: 56px;
+            font-weight: bold;
+            position: absolute;
+            top: 20px;
+            left: 20px;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        #highscores-link {
+            position: absolute;
+            top: 20px;
+            right: 100px;
+            color: #00ff99;
+            cursor: pointer;
+            text-decoration: underline;
+            font-size: 18px;
+            text-shadow: 0 0 10px #00ff99;
+        }
+        #score {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            font-size: 24px;
+            text-align: right;
+            color: #ff00ff;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        #score span {
+            display: block;
+        }
+        #game {
+            margin-top: 100px;
+        }
+        #question {
+            font-size: calc(120px * 1.25); 
+            animation: neonColors 3s infinite;
+            margin-bottom: 30px;
+            text-shadow: 0 0 10px #00ff99;
+        }
+        #answer {
+            font-size: 96px;
+            padding: 10px;
+            width: 300px;
+            text-align: center;
+            margin-bottom: 40px;
+            border: none;
+            background-color: black;
+            color: #00ff99;
+            text-shadow: 0 0 10px #00ff99;
+        }
+        #feedback {
+            font-size: 40px;
+            font-weight: bold;
+            margin-top: 30px;
+            height: 50px;
+            text-shadow: 0 0 10px #ff00ff;
+        }
+        #start-button, #restart-button {
+            padding: 15px 30px;
+            font-size: 28px;
+            cursor: pointer;
+            background-color: #ff00ff;
+            border: none;
+            color: black;
+            border-radius: 5px;
+            margin-top: 30px;
+            box-shadow: 0 0 20px #ff00ff;
+            text-transform: uppercase;
+        }
+        .emoji {
+            position: absolute;
+            font-size: 40px;
+            animation: float 10s linear infinite;
+            opacity: 0.8;
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(100vh);
+            }
+            100% {
+                transform: translateY(-100vh);
+            }
+        }
+        @keyframes neonColors {
+            0% { color: #00ff99; }
+            25% { color: #ff00ff; }
+            50% { color: #00ccff; }
+            75% { color: #ffff00; }
+            100% { color: #00ff99; }
+        }
+    </style>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+<audio id="correct-sound" src="https://www.myinstants.com/media/sounds/ka-ching.mp3" preload="auto"></audio>
+<audio id="incorrect-sound" src="https://www.myinstants.com/media/sounds/wrong-answer-buzzer.mp3" preload="auto"></audio>
+<audio id="start-sound" src="https://www.myinstants.com/media/sounds/gangnam-style.mp3" preload="auto"></audio>
+</head>
+<body>
+    <div id="game-container">
+        <button id="start-button">Start Game</button>
+        <div id="game" style="display:none;">
+            <div id="timer">01:00</div>
+            <a id="highscores-link" style="display:none;">View Highscores</a>
+            <div id="score">
+                <span><span id="correct-count">0</span> 😊 RIGHT</span>
+                <span><span id="wrong-count">0</span> 😢 WRONG</span>
+            </div>
+            <div id="question"></div>
+            <input type="number" id="answer" placeholder="?">
+            <p id="feedback"></p>
+        </div>
+        <button id="restart-button" style="display:none;">Restart Game</button>
+        <div id="highscores" style="display:none;">
+            <h2>Highscores</h2>
+            <ul id="highscores-list" style="list-style: none; padding: 0;"></ul>
+        </div>
+        <div id="wrong-answers" style="display:none;">
+            <h2>Incorrect Answers</h2>
+            <ul id="wrong-answers-list" style="list-style: none; padding: 0;"></ul>
+        </div>
+    </div>
+    <script>
+        let timer;
+        let timeRemaining = 60;
+        let correctCount = 0;
+        let wrongCount = 0;
+        let num1, num2;
+        let wrongAnswers = [];
+        let highscores = [];
+
+        function startGame() {
+            document.getElementById('start-sound').play();
+            document.getElementById('start-button').style.display = 'none';
+            document.getElementById('game').style.display = 'block';
+            document.getElementById('restart-button').style.display = 'none';
+            document.getElementById('highscores-link').style.display = 'none';
+            document.getElementById('wrong-answers').style.display = 'none';
+            timeRemaining = 60;
+            correctCount = 0;
+            wrongCount = 0;
+            wrongAnswers = [];
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('wrong-count').textContent = wrongCount;
+            startTimer();
+            generateQuestion();
+            generateEmojis();
+        }
+
+        function startTimer() {
+            document.getElementById('timer').textContent = `01:00`;
+            timer = setInterval(() => {
+                timeRemaining--;
+                let minutes = Math.floor(timeRemaining / 60);
+                let seconds = timeRemaining % 60;
+                document.getElementById('timer').textContent = `0${minutes}:${seconds < 10 ? '0' : ''}${seconds}`;
+                if (timeRemaining <= 0) {
+                    clearInterval(timer);
+                    endGame();
+                }
+            }, 1000);
+        }
+
+        function generateQuestion() {
+            num1 = Math.floor(Math.random() * 10) + 1;
+            num2 = Math.floor(Math.random() * 10) + 1;
+            document.getElementById('question').textContent = `${num1} × ${num2}`;
+            document.getElementById('answer').value = '';
+            document.getElementById('answer').focus();
+        }
+
+        function checkAnswer() {
+            let userAnswer = parseInt(document.getElementById('answer').value);
+            let correctAnswer = num1 * num2;
+            if (userAnswer === correctAnswer) {
+                correctCount++;
+                document.getElementById('correct-sound').play();
+                document.getElementById('feedback').textContent = '✅ Correct!';
+                document.getElementById('feedback').style.color = '#00ff99';
+                setTimeout(() => {
+                    document.getElementById('feedback').textContent = '';
+                    generateQuestion();
+                }, 500);
+            } else {
+                wrongCount++;
+                document.getElementById('incorrect-sound').play();
+                wrongAnswers.push(`${num1} × ${num2} = ${correctAnswer}`);
+                document.getElementById('feedback').textContent = `❌ Wrong! The correct answer was ${correctAnswer}.`;
+                document.getElementById('feedback').style.color = '#ff00ff';
+                setTimeout(() => {
+                    document.getElementById('feedback').textContent = '';
+                    generateQuestion();
+                }, 1000);
+            }
+            document.getElementById('correct-count').textContent = correctCount;
+            document.getElementById('wrong-count').textContent = wrongCount;
+        }
+
+        function endGame() {
+            if (wrongCount > 0) { 
+                displayWrongAnswers(); 
+            }
+            document.getElementById('end-sound').play();
+            recordHighscore();
+        }
+
+        function displayWrongAnswers() {
+            const wrongAnswersList = document.getElementById('wrong-answers-list');
+            wrongAnswersList.innerHTML = '';
+            wrongAnswers.forEach(answer => {
+                const li = document.createElement('li');
+                li.textContent = answer;
+                wrongAnswersList.appendChild(li);
+            });
+            document.getElementById('wrong-answers').style.display = 'block';
+        }
+
+        function recordHighscore() {
+            const playerName = prompt("Enter your name for the highscore:");
+            if (playerName) {
+                highscores.push({ name: playerName, score: correctCount });
+                highscores.sort((a, b) => b.score - a.score);
+                displayHighscores();
+            }
+        }
+
+        function displayHighscores() {
+            const highscoresList = document.getElementById('highscores-list');
+            highscoresList.innerHTML = '';
+            highscores.forEach(entry => {
+                const li = document.createElement('li');
+                li.textContent = `${entry.name}: ${entry.score}`;
+                highscoresList.appendChild(li);
+            });
+            document.getElementById('highscores').style.display = 'block';
+            document.getElementById('restart-button').style.display = 'block';
+        }
+
+        function generateEmojis() {
+            const emojis = ['😊', '😐', '😠'];
+            for (let i = 0; i < 20; i++) {
+                const emoji = document.createElement('div');
+                emoji.classList.add('emoji');
+                emoji.textContent = emojis[Math.floor(Math.random() * emojis.length)];
+                emoji.style.left = Math.random() * 100 + 'vw';
+                emoji.style.animationDuration = Math.random() * 5 + 5 + 's';
+                document.body.appendChild(emoji);
+            }
+        }
+
+        document.getElementById('start-button').addEventListener('click', startGame);
+        document.addEventListener('keyup', (event) => {
+            if (event.key === 'Enter' && document.getElementById('start-button').style.display !== 'none') {
+                startGame();
+            }
+        });
+        document.getElementById('restart-button').addEventListener('click', startGame);
+        document.getElementById('answer').addEventListener('keyup', (event) => {
+            if (event.key === 'Enter') {
+                checkAnswer();
+            }
+        });
+        document.getElementById('highscores-link').addEventListener('click', displayHighscores);
+    </script>
+</body>
+</html>
